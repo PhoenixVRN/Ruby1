@@ -1,38 +1,67 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+using System.Threading;
+
 
 public class RubyController : MonoBehaviour
 {
     public int maxHealth = 5;
     public int health { get { return currentHeath; } }
-    int currentHeath;
-    public float speed;
-    Rigidbody2D rigidbody2DL;
-    Animator animator;
-    Vector2 lookDirection = new Vector2(1, 0);
+
+    public int CountBrokenEnemy {
+        get
+        {
+            return countBrokenEnemy;
+        }
+        set 
+        {
+            countBrokenEnemy = value; 
+        } }
+
+    public float speed;                                 // скорость персонажа.
+    private volatile int countBrokenEnemy;              // количество роботов которых надо починить.
+    public AudioClip audioTrowCog;
+    public float timeInvincible = 2.0f;                 // врем€ неу€звимости после получени€ дамаги.
 
     public GameObject projectilePrefab;
-
     public ParticleSystem damageEffect;
     public ParticleSystem CollectibleEffect;
 
-    public float timeInvincible = 2.0f; // врем€ неу€звимости после дамаги
-    bool invincible; // маркер неу€звимости
+    int currentHeath;
     float invincibleTimer;
+    bool invincible; // маркер неу€звимости    
 
-
+    Rigidbody2D rigidbody2DL;
+    AudioSource audioSource;
+    Animator animator;
+    Vector2 lookDirection = new Vector2(1, 0);
 
     void Start()
     {
+        currentHeath = LoadBuffer.currentHealthRuby;
+        CountBrokenEnemy = LoadBuffer.countBrokenRobot_L1;
+        Debug.Log("Ѕыло при старте" + CountBrokenEnemy);
         rigidbody2DL = GetComponent<Rigidbody2D>();
-        currentHeath = maxHealth;
         animator = GetComponent<Animator>();
+        audioSource = GetComponent<AudioSource>();
     }
 
    
     void FixedUpdate()
     {
+if (Input.GetKey(KeyCode.R))
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
+
+        if (Input.GetKey(KeyCode.Q))
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex +1);   
+        }
+
         float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
 
@@ -81,7 +110,11 @@ public class RubyController : MonoBehaviour
                     character.DisplayDialog();
                 }
             }
-
+           
+        }
+        if (CountBrokenEnemy == 0)
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
         }
     }
 
@@ -101,17 +134,37 @@ public class RubyController : MonoBehaviour
             ParticleSystem collectParticle = Instantiate(CollectibleEffect, rigidbody2DL.position + Vector2.up * 0.5f, Quaternion.identity);
         }
         currentHeath = Mathf.Clamp(currentHeath + amount, 0, maxHealth);
-        UIHealthBar.instance.SetValue(currentHeath / (float)maxHealth);
-        Debug.Log(currentHeath + "/" + maxHealth);
+        LoadBuffer.currentHealthRuby = currentHeath;
+        Debug.Log("ѕри дамаге " + currentHeath);
+        HealthEnergi();
+ //       Debug.Log(currentHeath + "/" + maxHealth);
     }
 
+    public void HealthEnergi()
+    {
+        UIHealthBar.instance.SetValue(currentHeath / (float)maxHealth);
+    }
     void Launch()
     {
         GameObject projectileObject = Instantiate(projectilePrefab, rigidbody2DL.position + Vector2.up * 0.5f, Quaternion.identity);
 
         Projectile projectile = projectileObject.GetComponent<Projectile>();
         projectile.Launch(lookDirection, 300);
-
- //       animator.SetTrigger("Launch");
+        audioSource.PlayOneShot(audioTrowCog);
+        animator.SetTrigger("Launch");
+    }
+     public void DetectingEnemy()
+    {
+        Debug.Log("Ѕыло "+CountBrokenEnemy);     
+            CountBrokenEnemy--;       
+        Debug.Log("стало " + CountBrokenEnemy);
+    }
+    public void PlaySound (AudioClip clip)
+    {
+        audioSource.PlayOneShot(clip);
+    }
+    public void LoadConstsant(int currentHit)
+    {
+        LoadBuffer.currentHealthRuby = currentHit;
     }
 }
