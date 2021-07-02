@@ -11,18 +11,10 @@ public class RubyController : MonoBehaviour
     public int maxHealth = 5;
     public int health { get { return currentHeath; } }
 
-    public int CountBrokenEnemy {
-        get
-        {
-            return countBrokenEnemy;
-        }
-        set 
-        {
-            countBrokenEnemy = value; 
-        } }
 
     public float speed;                                 // скорость персонажа.
-    private volatile int countBrokenEnemy;              // количество роботов которых надо починить.
+    [SerializeField]
+    private int countBrokenEnemy;              // количество роботов которых надо починить.
     public AudioClip audioTrowCog;
     public float timeInvincible = 2.0f;                 // врем€ неу€звимости после получени€ дамаги.
 
@@ -42,8 +34,8 @@ public class RubyController : MonoBehaviour
     void Start()
     {
         currentHeath = LoadBuffer.currentHealthRuby;
-        CountBrokenEnemy = LoadBuffer.countBrokenRobot_L1;
-        Debug.Log("Ѕыло при старте" + CountBrokenEnemy);
+        countBrokenEnemy = LoadBuffer.countBrokenRobot_L1;
+        Debug.Log("Ѕыло при старте" + countBrokenEnemy);
         rigidbody2DL = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         audioSource = GetComponent<AudioSource>();
@@ -93,6 +85,8 @@ if (Input.GetKey(KeyCode.R))
 
     private void Update()
     {
+
+        Debug.Log("Ѕыло " + countBrokenEnemy);
         if (Input.GetKeyDown(KeyCode.C))
         {
             Launch();
@@ -112,7 +106,7 @@ if (Input.GetKey(KeyCode.R))
             }
            
         }
-        if (CountBrokenEnemy == 0)
+        if (countBrokenEnemy == 0)
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
         }
@@ -155,9 +149,9 @@ if (Input.GetKey(KeyCode.R))
     }
      public void DetectingEnemy()
     {
-        Debug.Log("Ѕыло "+CountBrokenEnemy);     
-            CountBrokenEnemy--;       
-        Debug.Log("стало " + CountBrokenEnemy);
+        Debug.Log("Ѕыло "+ countBrokenEnemy);
+        countBrokenEnemy--;       
+        Debug.Log("стало " + countBrokenEnemy);
     }
     public void PlaySound (AudioClip clip)
     {
