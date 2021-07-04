@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CounterRobo : MonoBehaviour
 {
-    public int counterRobo;
+    public int _counterRobo;
    
 
   

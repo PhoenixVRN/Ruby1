@@ -21,6 +21,7 @@ public class RubyController : MonoBehaviour
     public GameObject projectilePrefab;
     public ParticleSystem damageEffect;
     public ParticleSystem CollectibleEffect;
+    public CounterRobo counterRobo;
 
     int currentHeath;
     float invincibleTimer;
@@ -34,7 +35,7 @@ public class RubyController : MonoBehaviour
     void Start()
     {
         currentHeath = LoadBuffer.currentHealthRuby;
-        countBrokenEnemy = LoadBuffer.countBrokenRobot_L1;
+        countBrokenEnemy = counterRobo._counterRobo;
         Debug.Log("Áûכמ ןנט סעאנעו" + countBrokenEnemy);
         rigidbody2DL = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
@@ -86,7 +87,7 @@ if (Input.GetKey(KeyCode.R))
     private void Update()
     {
 
-        Debug.Log("Áûכמ " + countBrokenEnemy);
+//        Debug.Log("Áûכמ " + countBrokenEnemy);
         if (Input.GetKeyDown(KeyCode.C))
         {
             Launch();
